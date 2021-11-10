@@ -1,0 +1,25 @@
+.button-group .btn{
+    margin-right: 10px;
+}
+
+.user-data{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.user-data li{
+     margin-top: 10px;
+}
+
+.text-normal{
+    font-weight: normal;
+}
+
+.btn-block{
+    width: 100%;
+}
+
+.form-group{
+    margin-bottom: 10px;
+}
