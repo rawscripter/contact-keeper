@@ -10,7 +10,9 @@ const Home = () => {
                 <div className="col-md-4 ">
                     <ContactForm />
                 </div>
-                <div className="col-md-6 m-auto">
+                <div className="col-md-2 ">
+                </div>
+                <div className="col-md-6 ">
                     <Contacts />
                 </div>
             </div>
