@@ -1,11 +1,33 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-const Register = () => {
+import AlertContext from '../../context/alert/alertContext';
+import AuthContext from '../../context/auth/AuthContext';
+const Register = (props) => {
+    const alertContext = React.useContext(AlertContext);
+    const { setAlert } = alertContext;
+
+    const authContext = React.useContext(AuthContext);
+    const { register, error, clearErrors, isAuthenticated } = authContext;
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            props.history.push('/');
+        }
+
+        if (error === 'User already exists') {
+            setAlert(error, 'danger');
+            clearErrors();
+        }
+
+        // eslint-disable-next-line
+    }, [error, isAuthenticated, props.history]);
+
+
     const [user, setUser] = useState({
-        name: '',
-        email: '',
-        password: '',
-        password2: ''
+        name: 'shuvo goswami',
+        email: 'shuvo@gmail.com',
+        password: '123456',
+        password2: '123456'
     });
 
     const { name, email, password, password2 } = user;
@@ -15,11 +37,11 @@ const Register = () => {
     const onSubmit = e => {
         e.preventDefault();
         if (password !== password2) {
-            console.log('Passwords do not match');
-            alert('Passwords do not match');
-        } else {
-            console.log('User registered');
+            setAlert('Passwords do not match', 'danger');
+            return;
         }
+
+        register({ name, email, password });
     };
 
 

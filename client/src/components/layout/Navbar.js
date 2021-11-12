@@ -1,7 +1,15 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Link } from 'react-router-dom'
+import AuthContext from "../../context/auth/AuthContext";
 const Navbar = ({ title, icon }) => {
+    const authContext = React.useContext(AuthContext);
+    const { isAuthenticated, logout, user } = authContext;
+
+    const onLogout = () => {
+        logout();
+    }
+
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light p-4">
             <Link to="/" className="navbar-brand">
@@ -31,11 +39,20 @@ const Navbar = ({ title, icon }) => {
                             About
                         </Link>
                     </li>
-                    <li className="nav-item">
-                        <Link to="/login" className="nav-link">
-                            Login
-                        </Link>
-                    </li>
+                    {!isAuthenticated && (
+                        <li className="nav-item">
+                            <Link to="/login" className="nav-link">
+                                Login
+                            </Link>
+                        </li>
+                    )}
+                    {isAuthenticated && (
+                        <li className="nav-item">
+                            <span onClick={onLogout} className="nav-link">
+                                Logout
+                            </span>
+                        </li>
+                    )}
                 </ul>
             </div>
 

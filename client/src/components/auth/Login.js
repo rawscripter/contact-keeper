@@ -1,10 +1,33 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-const Login = () => {
+import AuthContext from '../../context/auth/AuthContext';
+import AlertContext from '../../context/alert/alertContext';
+const Login = (props) => {
+    const authContext = React.useContext(AuthContext);
+    const { login, error, clearErrors, isAuthenticated } = authContext;
+
+    const alertContext = React.useContext(AlertContext);
+    const { setAlert } = alertContext;
+
     const [user, setUser] = useState({
-        email: '',
-        password: '',
+        email: 'shuvo@gmail.com',
+        password: '123456',
     });
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            // Redirect to home page
+            props.history.push('/');
+        }
+        if (error === 'Invalid Credentials') {
+            // Show error message
+            setAlert(error, 'danger');
+            // clear error message
+            clearErrors();
+        }
+        // eslint-disable-next-line
+    }, [error, isAuthenticated, props.history]);
+
 
     const { email, password } = user;
 
@@ -12,7 +35,16 @@ const Login = () => {
 
     const onSubmit = e => {
         e.preventDefault();
-        console.log('User Login');
+        if (email === '' || password === '') {
+            console.log('Please enter all fields');
+        } else {
+            login({
+                email,
+                password,
+            });
+        }
+
+
     };
 
 
