@@ -2,6 +2,7 @@ import React, { useReducer } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import ContactContext from './contactContext'
 import contactReducer from './contactReducer'
+import axios from 'axios';
 import {
     ADD_CONTACT,
     DELETE_CONTACT,
@@ -9,50 +10,62 @@ import {
     CLEAR_CURRENT,
     UPDATE_CONTACT,
     FILTER_CONTACTS,
-    CLEAR_FILTER
+    CLEAR_FILTER,
+    GET_CONTACTS,
+    CLEAR_CONTACTS
 } from '../types'
 
 
 
 const ContactState = props => {
     const initialState = {
-        contacts: [
-            {
-                id: 1,
-                name: 'John Doe',
-                email: 'admin@gmail.com',
-                phone: '1234567890',
-                type: 'personal'
-            },
-            {
-                id: 2,
-                name: 'Karen Williams',
-                email: 'b@g.com',
-                phone: '1234567890',
-                type: 'personal'
-            },
-            {
-                id: 3,
-                name: 'Henry Johnson',
-                email: 'c@gm.com',
-                phone: '1234567890',
-                type: 'professional'
-            }
-        ],
+        contacts: [],
         current: null,
-        filtered: null
+        filtered: null,
+        loading: true,
+        error: null
     };
     const [state, dispatch] = useReducer(contactReducer, initialState);
 
-    // Add Contact
-    const addContact = contact => {
-        contact.id = uuidv4();
+    // get contacts
+    const getContacts = async () => {
+        try {
+            const res = await axios.get('/api/contacts');
+            dispatch({
+                type: GET_CONTACTS,
+                payload: res.data
+            })
+        } catch (err) {
+            console.error(err.message);
+        }
+    }
 
-        dispatch({ type: ADD_CONTACT, payload: contact })
+
+    // Add Contact
+    const addContact = async contact => {
+        // add new contact to databse 
+        let res = await axios.post('/api/contacts', contact);
+        try {
+            dispatch({
+                type: ADD_CONTACT,
+                payload: res.data
+            })
+        } catch (err) {
+            console.log(err);
+        }
+
     }
     // Delete Contact
-    const deleteContact = id => {
-        dispatch({ type: DELETE_CONTACT, payload: id })
+    const deleteContact = async contact => {
+
+        let id = contact._id;
+        let res = await axios.delete(`/api/contacts/${id}`);
+
+        try {
+            dispatch({ type: DELETE_CONTACT, payload: id })
+        } catch (err) {
+            console.log(err);
+        }
     }
     // Set Current Contact 
     const setCurrent = contact => {
@@ -64,8 +77,16 @@ const ContactState = props => {
         dispatch({ type: CLEAR_CURRENT })
     }
     // Update Contact
-    const updateContact = contact => {
-        dispatch({ type: UPDATE_CONTACT, payload: contact })
+    const updateContact = async contact => {
+        let id = contact._id;
+        let res = await axios.put(`/api/contacts/${id}`, contact);
+
+        try {
+            dispatch({ type: UPDATE_CONTACT, payload: res.data })
+        } catch (err) {
+            console.log(err);
+        }
+
     }
 
     // Filter Contacts
@@ -76,20 +97,26 @@ const ContactState = props => {
     const clearFilter = () => {
         dispatch({ type: CLEAR_FILTER })
     }
-
+    // Clear Contacts
+    const clearContacts = () => {
+        dispatch({ type: CLEAR_CONTACTS })
+    }
     return (
         <ContactContext.Provider value={{
             contacts: state.contacts,
             current: state.current,
             filtered: state.filtered,
+            loading: state.loading,
+            error: state.error,
             addContact,
             deleteContact,
             setCurrent,
             clearCurrent,
             updateContact,
             filterContacts,
-            clearFilter
-
+            clearFilter,
+            clearContacts,
+            getContacts
         }}>
             {props.children}
         </ContactContext.Provider>

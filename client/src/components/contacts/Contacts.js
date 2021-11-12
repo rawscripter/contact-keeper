@@ -6,27 +6,33 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 const Contacts = () => {
     const contactContext = useContext(ContactContext);
-    const { contacts, filtered } = contactContext;
+    const { contacts, filtered, getContacts, loading } = contactContext;
     // check useEffect is null or not
+    useEffect(() => {
+        getContacts();
+        // eslint-disable-next-line
+    }, []);
 
     return (
         <Fragment>
-            <TransitionGroup>
+            <ContactFilter />
+            {!loading ? (
+                <TransitionGroup>
+                    {!filtered && contacts.map(contact => (
+                        <CSSTransition key={contact._id} timeout={200} classNames="my-node">
+                            <ContactItem contact={contact}></ContactItem>
+                        </CSSTransition>
+                    ))}
 
-                <ContactFilter />
-                {!filtered && contacts.map(contact => (
-                    <CSSTransition key={contact.id} timeout={200} classNames="my-node">
-                        <ContactItem contact={contact}></ContactItem>
-                    </CSSTransition>
-                ))}
-
-                {filtered && filtered.map(contact => (
-                    <CSSTransition key={contact.id} timeout={200} classNames="my-node">
-                        <ContactItem contact={contact}></ContactItem>
-                    </CSSTransition>
-                ))}
-            </TransitionGroup>
-
+                    {filtered && filtered.map(contact => (
+                        <CSSTransition key={contact._id} timeout={200} classNames="my-node">
+                            <ContactItem contact={contact}></ContactItem>
+                        </CSSTransition>
+                    ))}
+                </TransitionGroup>
+            ) : (
+                <p>Loading...</p>
+            )}
         </Fragment>
     );
 }

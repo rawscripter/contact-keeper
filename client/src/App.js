@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useContext, useEffect } from 'react';
 import Navbar from './components/layout/Navbar';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Home from './components/pages/Home'
@@ -16,6 +16,7 @@ function App() {
   if (localStorage.token) {
     setAuthToken(localStorage.token);
   }
+
   return (
     <div className="App">
       <AlertState>

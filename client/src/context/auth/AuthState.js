@@ -18,8 +18,8 @@ import setAuthToken from '../../utils/setAuthToken'
 const AuthState = props => {
     const initialState = {
         token: localStorage.getItem('token'),
-        isAuthenticated: null,
-        loading: true,
+        isAuthenticated: false,
+        loading: null,
         user: null,
         error: null
     }
@@ -86,6 +86,7 @@ const AuthState = props => {
                 type: LOGIN_SUCCESS,
                 payload: res.data
             })
+            loadUser();
 
         }).catch(err => {
             dispatch({
